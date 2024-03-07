@@ -23,12 +23,21 @@ module.exports.findcita = async (req, res) => {
 };
 
 module.exports.createcita = async (req, res) => {
+    const { nombre_y_apellido, CIN, edad, telefono, especialidades_consultadas, fecha_consulta,hora_consulta} = req.body;
+    //console.log(nombre_y_apellido, CIN, edad, telefono, especialidades_consultadas)
+    
     try {
-        const nuevaCita = await Citas.create(req.body);
-        res.status(201).json(nuevaCita);
+        if (!nombre_y_apellido || !CIN || !edad || !telefono || !especialidades_consultadas ||!fecha_consulta || !hora_consulta) {
+            // Si falta alguno de los campos requeridos, responde con un código de estado 400
+            return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        }
+        const newCita = new Citas({ nombre_y_apellido, CIN, edad, telefono, especialidades_consultadas, fecha_consulta, hora_consulta })
+        await newCita.save()
+        res.status(201).json(newCita);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+    
 };
 
 module.exports.updatecita = async (req, res) => {
